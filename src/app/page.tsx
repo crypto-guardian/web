@@ -16,7 +16,7 @@ export default function Home() {
           </p>
         </div>
         <div className='w-1/2'>
-          <Image src={heroImage} alt='hero' width={'100%'} />
+          <Image src={heroImage} alt='hero' />
         </div>
         {/* <p>{SITE_DESCRIPTION}</p> */}
       </div>
