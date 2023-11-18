@@ -1,15 +1,18 @@
 'use client'
+import ShowBalance from '@/components/ShowBalance'
+import { fetchBalance } from '@wagmi/core'
 // pages/manage.tsx
 import { useState, useEffect, ChangeEvent } from 'react'
+import { useAccount } from 'wagmi'
 
-interface CryptoAsset {
+export interface CryptoAsset {
   token: string
   network: string
 }
 
 const mockCryptoAssets: CryptoAsset[] = [
-  { token: 'Bitcoin', network: 'BTC' },
-  { token: 'Ethereum', network: 'ETH' },
+  { token: 'MATIC', network: 'Polygon' },
+  { token: 'Link', network: 'Polygon' },
   // Add more mock assets here
 ]
 
@@ -18,6 +21,35 @@ interface WalletAddresses {
 }
 
 export default function Manage() {
+  const { address } = useAccount()
+  // console.log('Account data:', address)
+  const [maticBalance, setMaticBalance] = useState<string | null>(null)
+  const [linkBalance, setLinkBalance] = useState<string | null>(null)
+  useEffect(() => {
+    const getBalance = async () => {
+      if (address) {
+        try {
+          const maticBalanceData = await fetchBalance({
+            address: address,
+            chainId: 137, // Polygon Mainnet
+          })
+          setMaticBalance(parseFloat(maticBalanceData.formatted).toFixed(2))
+          // Fetch LINK Balance
+          const linkBalanceData = await fetchBalance({
+            address: address,
+            token: '0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39',
+            chainId: 137, // Polygon Mainnet
+          })
+          setLinkBalance(parseFloat(linkBalanceData.formatted).toFixed(3))
+        } catch (error) {
+          console.error('Error fetching balance:', error)
+        }
+      }
+    }
+
+    getBalance()
+  }, [address]) // Dependency array includes accountData.address
+
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset | null>(null)
   const [walletAddresses, setWalletAddresses] = useState<WalletAddresses>({})
   const [divisionCount, setDivisionCount] = useState<number>(1)
@@ -52,14 +84,24 @@ export default function Manage() {
       <div className='w-1/4 bg-gray-800 p-4 text-white'>
         <h2 className='text-xl mb-4'>Your Assets</h2>
         <ul>
-          {mockCryptoAssets.map((asset, index) => (
-            <li
-              key={index}
-              className={`cursor-pointer p-2 ${selectedAsset === asset ? 'bg-gray-700' : ''}`}
-              onClick={() => handleAssetClick(asset)}>
-              {asset.token} ({asset.network})
-            </li>
-          ))}
+          <li className='cursor-pointer p-2 bg-gray-700' onClick={() => handleAssetClick(mockCryptoAssets[0])}>
+            {mockCryptoAssets[0].token} ({mockCryptoAssets[0].network}): &nbsp; {maticBalance}
+          </li>
+          <li className='cursor-pointer p-2' onClick={() => handleAssetClick(mockCryptoAssets[1])}>
+            {mockCryptoAssets[1].token} ({mockCryptoAssets[1].network}): &nbsp; {linkBalance}
+          </li>
+          {/* {mockCryptoAssets.map((asset, index) => {
+            console.log('asset: ', asset)
+            console.log('index', index)
+            return (
+              <li
+                key={index}
+                className={`cursor-pointer p-2 ${selectedAsset === asset ? 'bg-gray-700' : ''}`}
+                onClick={() => handleAssetClick(asset)}>
+                {asset.token} ({asset.network}): &nbsp; {index === 0 ? maticBalance : linkBalance}
+              </li>
+            )
+          })} */}
         </ul>
       </div>
       <div className='w-3/4 p-4'>
