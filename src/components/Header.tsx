@@ -3,7 +3,7 @@ import { LinkComponent } from './LinkComponent'
 import { SITE_NAME } from '@/utils/site'
 import { Connect } from './Connect'
 import Image from 'next/image'
-import logo from '@/assets/images/logo.png'
+import logo from '@/assets/images/logo-cropped.png'
 
 export function Header() {
   return (
@@ -11,7 +11,7 @@ export function Header() {
       <LinkComponent href='/' className='w-1/3'>
         {/* <h1 className='text-2xl font-bold text-white'>{SITE_NAME}</h1> */}
         <h1 className='text-2xl font-bold text-white'>
-          <Image src={logo} alt={'CryptoGuardian'} height={120} />
+          <Image src={logo} alt={'CryptoGuardian'} height={30} />
         </h1>
       </LinkComponent>
 
